@@ -1,6 +1,7 @@
 # platform-game / Side scroller game
 
-![](platform-game-wireframe.png)
+![](platform-game-wireframe-1.png)
+![](platform-game-wireframe-2.png)
 ![](platform-game-mockup.png)
 
 

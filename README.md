@@ -10,3 +10,5 @@
 that may kill the player
 
 UI counts the distance passed.
+
+> Icons made by Freepik from www.flaticon.com

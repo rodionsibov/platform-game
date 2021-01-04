@@ -26,7 +26,6 @@
 	  width: 800px;
 	  height: 500px;
 	  border: 2px solid #333;
-	  background: linear-gradient(to bottom, #333, #111);
       }
 
     </style>
@@ -46,7 +45,7 @@
       let score = 0;
       let gameFrame = 0;
 
-      ctx.font = "30px Georgia";
+      ctx.font = "20px Georgia";
       let gameSpeed = 1;
 
       // Mouse interactivity
@@ -70,7 +69,7 @@
       
       // Player
       const playerLeft = new Image();
-      playerLeft.src = "https://www.flaticon.com/svg/static/icons/svg/3969/3969753.svg";
+      playerLeft.src = "";
 
 
       class Player {
@@ -198,7 +197,7 @@
 	  player.update();
 	  player.draw();
 	  ctx.fillStyle = "black";
-	  ctx.fillText("score: " + score, 10, 30);
+	  ctx.fillText("score: " + score, 10, 20);
 	  gameFrame++;
 	  requestAnimationFrame(animate);
       }

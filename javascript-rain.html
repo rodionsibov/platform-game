@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap" rel="stylesheet">
+    <title>JavaScript Rain</title>
+    <style>
+
+      * {
+	  margin: 0;
+	  padding: 0;
+	  box-sizing: border-box;
+	  font-family: 'Montserrat', sans-serif;
+      }
+
+      #title1 {
+	  position: absolute;
+	  top: 50%;
+	  left: 50%;
+	  transform: translate(-50%, -50%);
+	  font-size: 12vw;
+	  white-space: nowrap;
+	  border-top: 5px solid gold;
+	  user-select: none;
+	  color: gold;
+      }
+
+      #title1::before {
+	  content: "is awesome";
+	  position: absolute;
+	  bottom: -1em;
+	  font-size: 5vw;
+	  text-align: center;
+	  width: 100%;
+      }
+
+      
+    </style>
+  </head>
+  <body>
+    <canvas></canvas>
+    <h1 id="title1">JavaScript</h1>
+    <script>
+
+      const canvas = document.querySelector("canvas");
+      const ctx = canvas.getContext("2d");
+
+      canvas.width = innerWidth;
+      canvas.height = innerHeight;
+
+      // Variables
+      let particlesArray = [];
+      
+      
+      // measure title element
+      let titleEl = document.querySelector("#title1");
+      let titleMeasurements = titleEl.getBoundingClientRect();
+      let title = {
+	  x: titleMeasurements.left,
+	  y: titleMeasurements.top,
+	  width: titleMeasurements.width,
+	  height: 10,
+      }
+
+      // Event Listeners
+
+      addEventListener("resize", () => {
+	  canvas.width = innerWidth;
+	  canvas.height = innerHeight;
+	  titleMeasurements = titleEl.getBoundingClientRect();
+	  title = {
+	      x: titleMeasurements.left,
+	      y: titleMeasurements.top,
+	      width: titleMeasurements.width,
+	      height: 10,
+	  }
+
+	  init();
+      })
+
+
+      
+      // Objects
+      class Particle {
+	  constructor(x, y) {
+	      this.x = x;
+	      this.y = y;
+	      this.size = Math.random() * 10 + 1;
+	      this.weight = Math.random() * 1 + 1;
+	      this.directionX = -2;
+
+	  }
+
+	  draw() {
+	      ctx.beginPath();
+	      ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+	      ctx.fillStyle = `hsl(${Math.random() * 360},50%,50%)`;
+	      ctx.fill();
+	      ctx.closePath();
+	  }
+	  
+	  update() {
+	      if (this.y > canvas.height) {
+		  this.y = 0 - this.y;
+		  this.weight = Math.random() * 1 + 1;
+		  this.x = Math.random() * canvas.width * 1.5;
+	      }
+	      this.weight += 0.05;
+	      this.y += this.weight;
+	      this.x += this.directionX;
+	      this.draw();
+
+	      // check for collision between each particle and title element
+	      if (this.x < title.x + title.width &&
+		  this.x + this.size > title.x &&
+		  this.y < title.y + title.height &&
+		  this.y + this.size > title.y) {
+		  this.y -= 3;
+		  this.weight *= -0.5;
+	      }
+	  }
+
+      }
+      
+      // Implementation
+      let particles;
+      
+      function init() {
+	  particles = [];
+
+	  for (let i = 0; i < 300; i++) {
+	      particles.push(new Particle(Math.random() * canvas.width, Math.random() * canvas.height));
+	  }
+
+      }
+
+      // Animation loop
+
+      function animate() {
+	  requestAnimationFrame(animate);
+	  ctx.fillStyle = "rgba(0,0,0,0.01)";
+	  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+	  particles.forEach(particle => particle.update());
+
+      }
+      
+      init();
+      animate();
+
+      
+    </script>
+  </body>
+</html>

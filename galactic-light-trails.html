@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Galactic Light Trails</title>
+    <style>
+      body {
+	  margin: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas></canvas>
+    <script>
+
+      const canvas = document.querySelector("canvas");
+      const ctx = canvas.getContext("2d");
+
+      canvas.width = innerWidth;
+      canvas.height = innerHeight;
+      
+      
+      // Event Listeners
+      let mouseDown = false;
+      addEventListener("mousedown", () => {
+	  mouseDown = true;
+      })
+
+      addEventListener("mouseup", () => {
+	  mouseDown = false;
+      })
+
+      addEventListener("resize", () => {
+	  canvas.width = innerWidth;
+	  canvas.height = innerHeight;
+
+	  init();
+      })
+
+
+      // Objects
+      class Particle {
+	  constructor(x, y, radius, color) {
+	      this.x = x;
+	      this.y = y;
+	      this.radius = radius;
+	      this.color = color;
+	  }
+
+	  draw() {
+	      ctx.beginPath();
+	      ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
+	      ctx.shadowColor = this.color;
+	      ctx.shadowBlur = 15;
+	      ctx.fillStyle = this.color;
+	      ctx.fill();
+	      ctx.closePath();
+	  }
+	  
+	  update() {
+	      this.draw()
+	  }
+
+      }
+      
+      // Implementation
+
+      let particles;
+      
+      function init() {
+	  particles = [];
+	  for (let i = 0; i < 400; i++) {
+	      const x = (Math.random() * (canvas.width + 300)) - (canvas.width + 300) / 2;
+	      const y = (Math.random() * (canvas.height + 300)) - (canvas.height + 300) / 2;
+	      const radius = Math.random() * 3;
+	      const color = `hsl(${Math.round(Math.random() * (260 - 180) + 180)},50%,50%)`;
+	      particles.push(new Particle(x, y, radius, color))
+	  }
+
+      }
+
+      
+      // Animation loop
+      let radians = 0;
+      let alpha = 1;
+
+      function animate() {
+	  requestAnimationFrame(animate);
+	  ctx.fillStyle = `rgba(10,10,10,${alpha})`;
+	  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+	  ctx.save();
+	  ctx.translate(canvas.width / 2, canvas.height / 2);
+	  ctx.rotate(radians);
+	  particles.forEach(particle => particle.update());
+	  ctx.restore();
+	  radians += 0.005;
+
+	  if (mouseDown && alpha >= 0.03) {
+	      alpha -= 0.01;
+	  } else if (!mouseDown && alpha < 1) {
+	      alpha += 0.01;
+	  }
+	  
+      }
+      
+      init();
+      animate();
+
+      
+    </script>
+  </body>
+</html>

@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Canvas Template</title>
+    <style>
+      body {
+	  margin: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas></canvas>
+    <script>
+
+      const canvas = document.querySelector("canvas");
+      const ctx = canvas.getContext("2d");
+
+      canvas.width = innerWidth;
+      canvas.height = innerHeight;
+      
+      // Variables
+      let mouse = {
+	  x: innerWidth / 2,
+	  y: innerHeight / 2
+      }
+
+      let colors = [
+	  "red",
+	  "green",
+	  "blue"
+      ]
+      
+      // Event Listeners
+      addEventListener("mousemove", (e) => {
+	  mouse.x = e.clientX;
+	  mouse.y = e.clientY;
+      })
+
+      addEventListener("resize", () => {
+	  canvas.width = innerWidth;
+	  canvas.height = innerHeight;
+
+	  init();
+      })
+
+
+      // Utility Functions
+      function randomIntFromRange(min, max) {
+	  return Math.floor(Math.random() * (max - min + 1) + min);
+      }
+
+      function randomColor(colors) {
+	  return colors[Math.floor(Math.random() * colors.length)];
+      }
+
+      // Objects
+      class Object {
+	  constructor(x, y, radius, color) {
+	      this.x = x;
+	      this.y = y;
+	      this.radius = radius;
+	      this.color = color;
+	  }
+
+	  draw() {
+	      ctx.beginPath();
+	      ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
+	      ctx.fillStyle = this.color;
+	      ctx.fill();
+	      ctx.closePath();
+	  }
+	  
+	  update() {
+	      this.draw()
+	  }
+
+      }
+      
+      // Implementation
+      function init() {
+	  
+      }
+
+      // Animation loop
+      function animate() {
+	  requestAnimationFrame(animate);
+	  ctx.clearRect(0, 0, canvas.width, canvas.height);
+	  ctx.fillText("HTML Canvas Boilerplate", mouse.x, mouse.y);
+      }
+      
+      init();
+      animate();
+
+      
+    </script>
+  </body>
+</html>

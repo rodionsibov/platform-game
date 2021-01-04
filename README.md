@@ -8,4 +8,4 @@
 that may kill the player
 1. UI counts the distance passed.
 
-> <p style="font-size: 12px;">Icons made by Freepik from www.flaticon.com</p>
+> Icons made by Freepik from www.flaticon.com

@@ -8,4 +8,4 @@
 that may kill the player
 1. UI counts the distance passed.
 
-> Icons made by Freepik from www.flaticon.com
+> <small>Icons made by Freepik from www.flaticon.com</small>

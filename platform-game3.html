@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
+    <title>Side scroller game</title>
+    <style>
+      * {
+	  margin: 0;
+	  padding: 0;
+	  box-sizing: border-box;
+	  font-family: 'Poppins', sans-serif;
+
+      }
+
+      body {
+	  height: 100vh;
+      }
+
+      h1 {
+	  position: absolute;
+	  top: 50%;
+	  left: 50%;
+	  transform: translate(-50%, -50%);
+	  width: 100vw;
+	  height: 100vh;
+	  background: rgba(0,0,0,0.7);
+	  display: flex;
+	  align-items: center;
+	  justify-content: center;
+	  user-select: none;
+	  color: orangered;
+	  
+      }
+      
+    </style>
+  </head>
+  <body>
+    <canvas></canvas>
+    <script>
+
+      const canvas = document.querySelector("canvas");
+      const ctx = canvas.getContext("2d");
+
+      canvas.width = innerWidth;
+      canvas.height = innerHeight;
+      
+      // Variables
+
+      let arrowUpPressed = false;
+      let arrowRightPressed = false;
+      let angle = 0;
+      let animationId;
+
+      // Event Listeners
+      addEventListener("keydown", (e) => {
+	  if (e.code === "ArrowUp") {
+	      arrowUpPressed = true;
+	  }
+	  if (e.code === "Escape") {
+	      cancelAnimationFrame(animationId);
+	  }
+	  if (e.code === "ArrowRight") {
+	      arrowRightPressed = true;
+	  }
+	  if (e.code === "Space") {
+	      projectiles.push(new Projectile(player.x, player.y, 5));
+
+	  }
+      })
+
+      addEventListener("keyup", (e) => {
+	  if (e.code === "ArrowUp") {
+	      arrowUpPressed = false;
+	  } 
+	  if (e.code === "ArrowRight") {
+	      arrowRightPressed = false;
+	  } 
+      })
+
+      addEventListener("resize", () => {
+	  canvas.width = innerWidth;
+	  canvas.height = innerHeight;
+
+	  init();
+      })
+
+      // Utility Functions
+
+
+      
+      // Objects
+      class Player {
+	  constructor() {
+	      this.x = 150;
+	      this.y = 200;
+	      this.velocity = 0;
+	      this.radius = 10;
+	      this.weight = 1;
+	      this.color = "green";
+	  }
+
+	  draw() {
+	      ctx.fillStyle = this.color;
+	      ctx.beginPath();
+	      ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+	      ctx.fill();
+	      ctx.closePath();
+	  }
+	  
+	  update() {
+	      this.draw();
+	      let curve = Math.sin(angle) * 20;
+	      if (this.y > canvas.height - this.radius * 5 + curve) {
+	       	  this.y = canvas.height - this.radius * 5 + curve;
+	       	  this.velocity = 0;
+	      } else {
+	       	  this.velocity += this.weight;
+	       	  this.velocity *= 0.9;
+	       	  this.y += this.velocity;
+	      }
+	      if (this.y < 0 + this.radius * 10 + curve) {
+	       	  this.y = 0 + this.radius * 10 + curve;
+	       	  this.velocity = 0;
+	      }
+	      if (arrowUpPressed) {
+		  this.velocity = -10;
+	      }
+	      if (arrowRightPressed) {
+		  this.velocity = 5;
+		  this.x += this.velocity;
+	      }
+	      if (this.x > canvas.width - this.radius * 10) {
+		  this.x = canvas.width - this.radius * 10;
+	      }
+
+	  }
+
+
+	  
+      }
+
+
+      class Enemy {
+	  constructor(x, y) {
+	      this.x = x;
+	      this.y = y;
+	      this.radius = Math.random() * (30 - 10) + 10;
+	      this.color = `hsl(${Math.random() * 360},50%,50%)`;
+	      this.velocity = 1;
+	  }
+
+	  draw() {
+	      ctx.fillStyle = this.color;
+	      ctx.beginPath();
+	      ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+	      ctx.fill();
+	      ctx.closePath();
+	  }
+	  
+	  update() {
+	      this.draw();
+	      this.x -= this.velocity;
+	  }
+	  
+      }
+
+      class Obstacle {
+	  constructor(x, y) {
+	      this.x = x;
+	      this.y = y;
+	      this.radius = 30;
+	      this.velocity = 2;
+	      this.color = "black";
+	  }
+
+	  draw() {
+	      ctx.fillStyle = this.color;
+	      ctx.beginPath();
+	      ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+	      ctx.fill();
+	      ctx.closePath();
+	  }
+	  
+	  update() {
+	      this.draw();
+	      this.x -= this.velocity;
+	  }
+	  
+      }
+
+      class Projectile {
+	  constructor(x, y, velocity) {
+	      this.x = x;
+	      this.y = y;
+	      this.radius = 4;
+	      this.color = "black";
+	      this.velocity = velocity;
+	  }
+
+	  draw() {
+	      ctx.fillStyle = this.color;
+	      ctx.beginPath();
+	      ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+	      ctx.fill();
+	      ctx.closePath();
+
+	  }
+	  
+	  update() {
+	      this.draw();
+	      this.x += this.velocity;
+
+	  }
+	  
+      }
+      
+      class Particle {
+	  constructor(x, y, radius, color, velocity) {
+	      this.x = x;
+	      this.y = y;
+	      this.radius = radius;
+	      this.color = color;
+	      this.velocity = velocity;
+	      this.alpha = 1;
+	      this.friction = 0.98;
+	      
+
+	  }
+
+	  draw() {
+	      ctx.save();
+	      ctx.globalAlpha = this.alpha;
+	      ctx.beginPath();
+	      ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+	      ctx.fillStyle = this.color;
+	      ctx.fill();
+	      ctx.restore();
+	  }
+	  
+	  update() {
+	      this.draw();
+	      this.velocity.x *= this.friction;
+	      this.velocity.y *= this.friction;
+	      this.x = this.x + this.velocity.x;
+	      this.y = this.y + this.velocity.y;
+	      this.alpha -= 0.01;
+	  }
+	  
+      }
+
+
+
+
+      // Implementation
+      let player;
+      let enemies = [];
+      let projectiles = [];
+      let projectilesE = [];
+      let obstacles = [];
+      let particles = [];
+
+      function init() {
+	  player = new Player();
+	  enemies = [];
+	  projectiles = [];
+	  projectilesE = [];
+	  obstacles = [];
+	  particles = [];
+
+	  // spawn enemies and obstacles
+	  setInterval(() => {
+
+	      let y = Math.random() * (canvas.height - 200) + 100;
+	      enemies.push(new Enemy(canvas.width + 100, y));
+	      	      
+	  }, 2000);
+
+	  setInterval(() => {
+	      let y = Math.random() * (canvas.height - 200) + 100;
+	      obstacles.push(new Obstacle(canvas.width + Math.random() * 200, canvas.height - 30));
+	      projectilesE.push(new Projectile(canvas.width - 10, y, -10));
+	      
+	  }, 500);
+
+	  
+      }
+
+
+      // Animation loop
+      function animate() {
+	  animationId = requestAnimationFrame(animate);
+	  ctx.clearRect(0, 0, canvas.width, canvas.height);
+	  
+	  player.update();
+	  angle += 0.12;
+
+
+
+	  projectilesE.forEach((projectile, index) => {
+	      projectile.update();
+	      const dist  = Math.hypot(player.x - projectile.x, player.y - projectile.y)
+
+	      // end game
+	      if (dist - projectile.radius - player.radius < 1) {
+		  document.body.appendChild(document.createElement("h1")).innerHTML = `GAME OVER`;
+		  
+		  cancelAnimationFrame(animationId);
+
+	      }
+
+	      // remove from edges of screen
+	      if (projectile.x + projectile.radius < 0) {
+	       	   setTimeout(() => {
+	       	      projectilesE.splice(index, 1);
+	       	  }, 0)   
+	       }
+	      
+	  })
+
+
+
+	  particles.forEach((particle, index) => {
+	      if (particle.alpha <= 0) {
+		  particles.splice(index, 1);
+	      } else {
+		  particle.update();		  
+	      }
+	  })
+
+	  
+	  obstacles.forEach((obstacle, index) => {
+	      obstacle.update();
+
+	      const dist  = Math.hypot(player.x - obstacle.x, player.y - obstacle.y)
+
+	      // end game
+	      if (dist - obstacle.radius - player.radius < 1) {
+		  cancelAnimationFrame(animationId);
+
+	      }
+
+	      // if (!(player.x > obstacle.x + obstacle.width ||
+	      // 	    player.x + player.width < obstacle.x ||
+	      // 	    player.y > obstacle.y + obstacle.height ||
+	      // 	    player.y + player.height < obstacle.y)) {
+	      // }
+
+	      // remove from edges of screen
+	      if (obstacle.x + obstacle.radius < 0) {
+		  setTimeout(() => {
+		      obstacles.splice(index, 1);
+		  }, 0)   
+	      }
+
+	      projectiles.forEach((projectile, projectileIndex) => {
+		  const dist = Math.hypot(projectile.x - obstacle.x, projectile.y - obstacle.y)
+		  
+		  if (dist - obstacle.radius - projectile.radius < 1) {
+
+		      // create explosions
+		      for (let i = 0; i < obstacle.radius * 2; i++) {
+			  particles.push(new Particle(projectile.x, projectile.y, Math.random() * 2, obstacle.color, {
+			      x: (Math.random() - 0.5) * (Math.random() * 6),
+			      y: (Math.random() - 0.5) * (Math.random() * 6),
+			  }))
+		      }
+
+		      
+		      if (obstacle.radius - 10 > 5) {
+			  // increase our score
+			  
+			  obstacle.radius -= 10,
+			  
+			  setTimeout(() => {
+			      projectiles.splice(projectileIndex, 1);
+			  }, 0)   
+			  
+			  
+		      } else {
+			  // remove from scene altogether
+			  
+			  setTimeout(() => {
+			      obstacles.splice(index, 1);
+			      projectiles.splice(projectileIndex, 1);
+			  }, 0)   
+		      }
+		      
+		  }
+	      })
+
+
+
+	  });
+
+
+	  projectiles.forEach((projectile, index) => {
+	      projectile.update();
+	      
+
+	      // remove from edges of screen
+	      if (projectile.x + projectile.radius < 0 ||
+		  projectile.x - projectile.radius > canvas.width) {
+		  setTimeout(() => {
+		      projectiles.splice(index, 1);
+		  }, 0)   
+	      }
+	  })
+
+
+
+	  enemies.forEach((enemy, index) => {
+	      enemy.update();
+
+	      const dist  = Math.hypot(player.x - enemy.x, player.y - enemy.y)
+	      
+	      // end game
+	      if (dist - enemy.radius - player.radius < 1) {
+		  cancelAnimationFrame(animationId);
+		  
+	      }
+	      	      
+	      // remove from edges of screen
+	      if (enemy.x + enemy.radius < 0) {
+		  setTimeout(() => {
+		      enemies.splice(index, 1);
+		  }, 0)   
+	      }
+
+
+	      projectiles.forEach((projectile, projectileIndex) => {
+		  const dist = Math.hypot(projectile.x - enemy.x, projectile.y - enemy.y)
+
+		  if (dist - enemy.radius - projectile.radius < 1) {
+
+		      // create explosions
+		      for (let i = 0; i < enemy.radius * 2; i++) {
+			  particles.push(new Particle(projectile.x, projectile.y, Math.random() * 2, enemy.color, {
+			      x: (Math.random() - 0.5) * (Math.random() * 6),
+			      y: (Math.random() - 0.5) * (Math.random() * 6),
+			  }))
+		      }
+
+		      
+		      if (enemy.radius - 10 > 5) {
+			  // increase our score
+			  			  
+			  enemy.radius -= 10,
+			  
+			  setTimeout(() => {
+			      projectiles.splice(projectileIndex, 1);
+			  }, 0)   
+					  
+			  
+		      } else {
+			  // remove from scene altogether
+			  
+			  setTimeout(() => {
+			      enemies.splice(index, 1);
+			      projectiles.splice(projectileIndex, 1);
+			  }, 0)   
+		      }
+		      
+		  }
+	      })
+
+
+	      
+	  })
+	  
+	  
+	  
+	  
+      }
+			  
+				  
+			
+	      
+      init();
+      animate();
+      
+    </script>
+  </body>
+</html>

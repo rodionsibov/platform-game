@@ -4,14 +4,14 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="preconnect" href="https://fonts.gstatic.com">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@700&display=swap" rel="stylesheet">
     <title>Side scroller game</title>
     <style>
       * {
 	  margin: 0;
 	  padding: 0;
 	  box-sizing: border-box;
-	  font-family: 'Poppins', sans-serif;
+	  font-family: 'Roboto Mono', monospace;
 
       }
 
@@ -34,11 +34,21 @@
 	  color: orangered;
 	  
       }
+
+      #scoreEl {
+	  position: absolute;
+	  top: 10px;
+	  left: 10px;
+	  user-select: none;
+	  font-size: 1.5em;
+	  color: #333;
+      }
       
     </style>
   </head>
   <body>
     <canvas></canvas>
+    <span id="scoreEl">0</span>
     <script>
 
       const canvas = document.querySelector("canvas");
@@ -48,6 +58,8 @@
       canvas.height = innerHeight;
       
       // Variables
+
+      const scoreEl = document.querySelector("#scoreEl");
 
       let arrowUpPressed = false;
       let arrowRightPressed = false;
@@ -99,7 +111,7 @@
 	      this.velocity = 0;
 	      this.radius = 10;
 	      this.weight = 1;
-	      this.color = "green";
+	      this.color = "";
 	  }
 
 	  draw() {
@@ -108,6 +120,11 @@
 	      ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
 	      ctx.fill();
 	      ctx.closePath();
+	      ctx.save();
+	      ctx.translate(this.x, this.y);
+	      ctx.rotate(90 * Math.PI / 180);
+	      ctx.drawImage(playerImg, -20, -20, 40, 40);
+	      ctx.restore();
 	  }
 	  
 	  update() {
@@ -187,6 +204,7 @@
 	  update() {
 	      this.draw();
 	      this.x -= this.velocity;
+	      this.y -= Math.sin(angle * 2);
 	  }
 	  
       }
@@ -261,7 +279,9 @@
       let projectilesE = [];
       let obstacles = [];
       let particles = [];
-
+      let score = 0;
+      let playerImg;
+      
       function init() {
 	  player = new Player();
 	  enemies = [];
@@ -269,6 +289,9 @@
 	  projectilesE = [];
 	  obstacles = [];
 	  particles = [];
+	  score = 0;
+	  scoreEl.innerHTML = score;
+
 
 	  // spawn enemies and obstacles
 	  setInterval(() => {
@@ -283,22 +306,29 @@
 	      obstacles.push(new Obstacle(canvas.width + Math.random() * 200, canvas.height - 30));
 	      projectilesE.push(new Projectile(canvas.width - 10, y, -10));
 	      
-	  }, 500);
+	  }, 5000);
 
+
+	  playerImg = new Image();
+	  playerImg.src = "https://www.flaticon.com/svg/static/icons/svg/2590/2590156.svg";
 	  
       }
 
-
+      
       // Animation loop
       function animate() {
 	  animationId = requestAnimationFrame(animate);
-	  ctx.clearRect(0, 0, canvas.width, canvas.height);
-	  
+	  ctx.fillStyle = "rgba(255,255,255,0.5)"
+	  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
 	  player.update();
 	  angle += 0.12;
+	  
 
 
 
+
+	  
 	  projectilesE.forEach((projectile, index) => {
 	      projectile.update();
 	      const dist  = Math.hypot(player.x - projectile.x, player.y - projectile.y)
@@ -342,6 +372,7 @@
 
 	      }
 
+
 	      // if (!(player.x > obstacle.x + obstacle.width ||
 	      // 	    player.x + player.width < obstacle.x ||
 	      // 	    player.y > obstacle.y + obstacle.height ||
@@ -371,7 +402,8 @@
 		      
 		      if (obstacle.radius - 10 > 5) {
 			  // increase our score
-			  
+			  score += 100;
+
 			  obstacle.radius -= 10,
 			  
 			  setTimeout(() => {
@@ -381,7 +413,9 @@
 			  
 		      } else {
 			  // remove from scene altogether
-			  
+			  score += 250;
+			  scoreEl.innerHTML = score;
+
 			  setTimeout(() => {
 			      obstacles.splice(index, 1);
 			      projectiles.splice(projectileIndex, 1);
@@ -446,7 +480,8 @@
 		      
 		      if (enemy.radius - 10 > 5) {
 			  // increase our score
-			  			  
+			  score += 100;
+			  
 			  enemy.radius -= 10,
 			  
 			  setTimeout(() => {
@@ -456,6 +491,8 @@
 			  
 		      } else {
 			  // remove from scene altogether
+			  score += 250;
+			  scoreEl.innerHTML = score;
 			  
 			  setTimeout(() => {
 			      enemies.splice(index, 1);
@@ -472,11 +509,10 @@
 	  
 	  
 	  
-	  
       }
 			  
 				  
-			
+
 	      
       init();
       animate();

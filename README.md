@@ -10,4 +10,4 @@
 that may kill the player
 1. UI counts the distance passed.
 
-# [Play Game](https://rodionsibov.github.io/platform-game/platform-game3.html)
+## [Play Game](https://rodionsibov.github.io/platform-game/platform-game3.html)

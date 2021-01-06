@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" integrity="sha512-+4zCK9k+qNFUR5X+cKL9EIR+ZOhtIloNl9GIKS57V1MyNsYpYcUrUeQc9vNfzsWfV28IaLL3i96P9sdNyeRssA==" crossorigin="anonymous" />    
     <title>Side scroller game</title>
     <style>
       * {
@@ -19,7 +21,7 @@
 	  height: 100vh;
       }
 
-      h1 {
+      #gameOver {
 	  position: absolute;
 	  top: 50%;
 	  left: 50%;
@@ -31,8 +33,24 @@
 	  align-items: center;
 	  justify-content: center;
 	  user-select: none;
-	  color: orangered;
-	  
+	  flex-direction: column;
+      }
+
+      h1 {
+	  color: red;
+	  margin-bottom: 30px;
+      }
+
+      i {
+	  font-size: 3em;
+	  color: white;
+	  opacity: 0.5;
+	  cursor: pointer;
+	  transition: 0.3s opacity;
+      }
+
+      i:hover {
+	  opacity: 1;
       }
 
       #scoreEl {
@@ -71,19 +89,15 @@
 	  if (e.code === "ArrowUp") {
 	      arrowUpPressed = true;
 	  }
-	  if (e.code === "Escape") {
-	      cancelAnimationFrame(animationId);
-	  }
 	  if (e.code === "ArrowRight") {
 	      arrowRightPressed = true;
-	  }
-	  if (e.code === "Space") {
-	      projectiles.push(new Projectile(player.x, player.y, 5));
-
 	  }
       })
 
       addEventListener("keyup", (e) => {
+	  if (e.code === "Space") {
+	      projectiles.push(new Projectile(player.x, player.y, 4, 45));
+	  }
 	  if (e.code === "ArrowUp") {
 	      arrowUpPressed = false;
 	  } 
@@ -100,18 +114,27 @@
       })
 
       // Utility Functions
+      function gameOver() {
+	  const divEl = document.createElement("div");
+	  divEl.id = "gameOver";
+	  divEl.innerHTML = `<h1>GAME OVER</h1><i class="fas fa-redo reload"></i>`;
+	  document.body.appendChild(divEl);
+	  document.querySelector(".reload").addEventListener("click", () => {
+	      location.reload()
+	  });
 
+      }
 
       
       // Objects
       class Player {
 	  constructor() {
-	      this.x = 150;
+	      this.x = 80;
 	      this.y = 200;
 	      this.velocity = 0;
-	      this.radius = 10;
+	      this.radius = 20;
 	      this.weight = 1;
-	      this.color = "";
+	      this.color = "white";
 	  }
 
 	  draw() {
@@ -123,23 +146,23 @@
 	      ctx.save();
 	      ctx.translate(this.x, this.y);
 	      ctx.rotate(90 * Math.PI / 180);
-	      ctx.drawImage(playerImg, -20, -20, 40, 40);
+	      ctx.drawImage(playerImg, -this.radius, -this.radius, this.radius * 2, this.radius * 2);
 	      ctx.restore();
 	  }
 	  
 	  update() {
 	      this.draw();
 	      let curve = Math.sin(angle) * 20;
-	      if (this.y > canvas.height - this.radius * 5 + curve) {
-	       	  this.y = canvas.height - this.radius * 5 + curve;
+	      if (this.y > canvas.height - this.radius * 3 + curve) {
+	       	  this.y = canvas.height - this.radius * 3 + curve;
 	       	  this.velocity = 0;
 	      } else {
 	       	  this.velocity += this.weight;
 	       	  this.velocity *= 0.9;
 	       	  this.y += this.velocity;
 	      }
-	      if (this.y < 0 + this.radius * 10 + curve) {
-	       	  this.y = 0 + this.radius * 10 + curve;
+	      if (this.y < 0 + this.radius * 5 + curve) {
+	       	  this.y = 0 + this.radius * 5 + curve;
 	       	  this.velocity = 0;
 	      }
 	      if (arrowUpPressed) {
@@ -164,8 +187,9 @@
 	  constructor(x, y) {
 	      this.x = x;
 	      this.y = y;
-	      this.radius = Math.random() * (30 - 10) + 10;
-	      this.color = `hsl(${Math.random() * 360},50%,50%)`;
+	      this.radius = Math.random() * (30 - 15) + 15;
+	      // this.color = `hsl(${Math.random() * 360},50%,50%)`;
+	      this.color = "white";
 	      this.velocity = 1;
 	  }
 
@@ -175,11 +199,17 @@
 	      ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
 	      ctx.fill();
 	      ctx.closePath();
+	      ctx.save();
+	      ctx.translate(this.x, this.y);
+	      ctx.rotate(angle / 50 + 90 * Math.PI / 180);
+	      ctx.drawImage(enemyImg, -this.radius, -this.radius, this.radius * 2, this.radius * 2);
+	      ctx.restore();
 	  }
 	  
 	  update() {
 	      this.draw();
 	      this.x -= this.velocity;
+	      
 	  }
 	  
       }
@@ -190,7 +220,7 @@
 	      this.y = y;
 	      this.radius = 30;
 	      this.velocity = 2;
-	      this.color = "black";
+	      this.color = "white";
 	  }
 
 	  draw() {
@@ -199,6 +229,11 @@
 	      ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
 	      ctx.fill();
 	      ctx.closePath();
+	      ctx.save();
+	      ctx.translate(this.x, this.y);
+	      ctx.rotate(-angle * 90 * Math.PI / 180);
+	      ctx.drawImage(obstacleImg, -this.radius, -this.radius, this.radius * 2, this.radius * 2);
+	      ctx.restore();
 	  }
 	  
 	  update() {
@@ -210,12 +245,13 @@
       }
 
       class Projectile {
-	  constructor(x, y, velocity) {
+	  constructor(x, y, velocity, ang) {
 	      this.x = x;
 	      this.y = y;
-	      this.radius = 4;
-	      this.color = "black";
+	      this.radius = 10;
+	      this.color = "white";
 	      this.velocity = velocity;
+	      this.ang = ang;
 	  }
 
 	  draw() {
@@ -224,6 +260,11 @@
 	      ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
 	      ctx.fill();
 	      ctx.closePath();
+	      ctx.save();
+	      ctx.translate(this.x, this.y);
+	      ctx.rotate(this.ang * Math.PI / 180);
+	      ctx.drawImage(projectileImg, -this.radius, -this.radius, this.radius * 2, this.radius * 2);
+	      ctx.restore();
 
 	  }
 	  
@@ -244,8 +285,6 @@
 	      this.velocity = velocity;
 	      this.alpha = 1;
 	      this.friction = 0.98;
-	      
-
 	  }
 
 	  draw() {
@@ -255,6 +294,11 @@
 	      ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
 	      ctx.fillStyle = this.color;
 	      ctx.fill();
+	      ctx.restore();
+	      ctx.save();
+	      ctx.translate(this.x, this.y);
+	      ctx.rotate(this.ang * Math.PI / 180);
+	      ctx.drawImage(particleImg, -this.radius, -this.radius, this.radius * 2, this.radius * 2);
 	      ctx.restore();
 	  }
 	  
@@ -281,6 +325,9 @@
       let particles = [];
       let score = 0;
       let playerImg;
+      let obstacleImg;
+      let projectileImg;
+      let particleImg;
       
       function init() {
 	  player = new Player();
@@ -304,13 +351,22 @@
 	  setInterval(() => {
 	      let y = Math.random() * (canvas.height - 200) + 100;
 	      obstacles.push(new Obstacle(canvas.width + Math.random() * 200, canvas.height - 30));
-	      projectilesE.push(new Projectile(canvas.width - 10, y, -10));
+	      projectilesE.push(new Projectile(canvas.width - 10, y, -10, -135));
 	      
 	  }, 5000);
 
 
 	  playerImg = new Image();
 	  playerImg.src = "https://www.flaticon.com/svg/static/icons/svg/2590/2590156.svg";
+	  obstacleImg = new Image();
+	  obstacleImg.src = "https://www.flaticon.com/svg/static/icons/svg/2590/2590159.svg";
+	  enemyImg = new Image();
+	  enemyImg.src = "https://www.flaticon.com/svg/static/icons/svg/2590/2590181.svg";
+	  projectileImg = new Image();
+	  projectileImg.src = "https://www.flaticon.com/svg/static/icons/svg/2590/2590217.svg";
+	  particleImg = new Image();
+	  particleImg.src = "https://www.flaticon.com/svg/static/icons/svg/618/618852.svg";
+
 	  
       }
 
@@ -335,8 +391,7 @@
 
 	      // end game
 	      if (dist - projectile.radius - player.radius < 1) {
-		  document.body.appendChild(document.createElement("h1")).innerHTML = `GAME OVER`;
-		  
+		  gameOver();
 		  cancelAnimationFrame(animationId);
 
 	      }
@@ -368,6 +423,7 @@
 
 	      // end game
 	      if (dist - obstacle.radius - player.radius < 1) {
+		  gameOver();
 		  cancelAnimationFrame(animationId);
 
 	      }
@@ -393,14 +449,14 @@
 
 		      // create explosions
 		      for (let i = 0; i < obstacle.radius * 2; i++) {
-			  particles.push(new Particle(projectile.x, projectile.y, Math.random() * 2, obstacle.color, {
+			  particles.push(new Particle(projectile.x, projectile.y, Math.random() * 2, "white", {
 			      x: (Math.random() - 0.5) * (Math.random() * 6),
 			      y: (Math.random() - 0.5) * (Math.random() * 6),
 			  }))
 		      }
 
 		      
-		      if (obstacle.radius - 10 > 5) {
+		      if (obstacle.radius - 10 > 10) {
 			  // increase our score
 			  score += 100;
 
@@ -452,6 +508,7 @@
 	      
 	      // end game
 	      if (dist - enemy.radius - player.radius < 1) {
+		  gameOver();
 		  cancelAnimationFrame(animationId);
 		  
 	      }
@@ -471,14 +528,14 @@
 
 		      // create explosions
 		      for (let i = 0; i < enemy.radius * 2; i++) {
-			  particles.push(new Particle(projectile.x, projectile.y, Math.random() * 2, enemy.color, {
+			  particles.push(new Particle(projectile.x, projectile.y, Math.random() * 2, "white", {
 			      x: (Math.random() - 0.5) * (Math.random() * 6),
 			      y: (Math.random() - 0.5) * (Math.random() * 6),
 			  }))
 		      }
 
 		      
-		      if (enemy.radius - 10 > 5) {
+		      if (enemy.radius - 10 > 10) {
 			  // increase our score
 			  score += 100;
 			  

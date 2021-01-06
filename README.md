@@ -1,6 +1,6 @@
 # platform-game / Side scroller game
 
-![](./platform-game3-wireframe-img.png)
+![](./platform-game-wireframe-img.png)
 
 > Icons made by Freepik from www.flaticon.com
 

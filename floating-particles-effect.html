@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Floating Particles Effect</title>
+    <style>
+      body {
+	  margin: 0;
+	  height: 100vh;
+	  background: linear-gradient(#333, #111);
+      }
+    </style>
+  </head>
+  <body>
+    <canvas></canvas>
+    <script>
+
+      const canvas = document.querySelector("canvas");
+      const ctx = canvas.getContext("2d");
+
+      canvas.width = innerWidth;
+      canvas.height = innerHeight;
+      
+      // Variables
+      let mouse = {
+	  x: innerWidth / 2,
+	  y: innerHeight / 2
+      }
+      
+      let  particleArray;
+
+      // Event Listeners
+      addEventListener("mousemove", (e) => {
+	  mouse.x = e.clientX;
+	  mouse.y = e.clientY;
+      })
+
+      addEventListener("resize", () => {
+	  canvas.width = innerWidth;
+	  canvas.height = innerHeight;
+
+	  init();
+      })
+
+
+      // Utility Functions
+      function randomIntFromRange(min, max) {
+	  return Math.floor(Math.random() * (max - min + 1) + min);
+      }
+
+      function randomColor(colors) {
+	  return colors[Math.floor(Math.random() * colors.length)];
+      }
+
+      // Objects
+      class Particle {
+	  constructor(x, y, dx, dy, radius, color) {
+	      this.x = x;
+	      this.y = y;
+	      this.dx = dx;
+	      this.dy = dy;
+	      this.radius = radius;
+	      this.color = color;
+	  }
+
+	  draw() {
+	      ctx.beginPath();
+	      ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
+	      ctx.fillStyle = this.color;
+	      ctx.fill();
+	      ctx.closePath();
+	  }
+	  
+	  update() {
+	      this.draw()
+	      if (this.x + this.size > canvas.width ||
+		  this.x - this.size < 0) {
+		  this.dx = -this.dx;
+	      }
+	      if (this.y + this.size > canvas.height ||
+		  this.y - this.size < 0) {
+		  this.dy = -this.dy;
+	      }
+	      this.x += this.dx;
+	      this.y += this.dy;
+	  }
+
+      }
+      
+      // Implementation
+      function init() {
+
+	  particleArray = [];
+	  for (let i = 0; i < 100; i++) {
+	      let size = Math.random() * 20;
+	      let x = Math.random() * canvas.width - size * 2;
+	      let y = Math.random() * canvas.height - size * 2;
+	      let dx = Math.random() * 0.4 - 0.2;
+	      let dy = Math.random() * 0.4 - 0.2;
+	      let color = "aliceblue";
+	      particleArray.push(new Particle(x, y, dx, dy, size, color));
+	  }
+
+	  
+	  
+      }
+
+      // Animation loop
+      function animate() {
+	  requestAnimationFrame(animate);
+	  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+	  particleArray.forEach(particle => {
+	      particle.update();
+	  });
+	  
+      }
+      
+      init();
+      animate();
+
+      
+    </script>
+  </body>
+</html>

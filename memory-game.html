@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Memory Game</title>
+
+    <style>
+      body {
+	  background: #222;
+	  color: white;
+      }
+
+      .grid {
+	  width: 400px;
+	  height: 300px;
+      }
+
+      .grid img {
+	  width: 80px;
+	  margin: 10px;
+      }
+      
+    </style>
+  </head>
+  <body>
+    <h3>Score: <span id="result">0</span></h3>
+    <div class="grid">
+      
+    </div>
+    <script>
+
+      //addEventListener('DOMContentLoaded', () => {})
+      
+      // card options
+      const cardArray = [
+	  {
+	      name: 'fries',
+	      img: 'https://openmoji.org/data/color/svg/1F35F.svg'
+	  },
+	  {
+	      name: 'cheeseburger',
+	      img: 'https://openmoji.org/data/color/svg/1F354.svg'
+	  },
+	  {
+	      name: 'ice cream',
+	      img: 'https://openmoji.org/data/color/svg/1F368.svg'
+	  },
+	  {
+	      name: 'pizza',
+	      img: 'https://openmoji.org/data/color/svg/1F355.svg'
+	  },
+	  {
+	      name: 'baby bottle',
+	      img: 'https://openmoji.org/data/color/svg/1F37C.svg'
+	  },
+	  {
+	      name: 'hot dog',
+	      img: 'https://openmoji.org/data/color/svg/1F32D.svg'
+	  },
+	  {
+	      name: 'fries',
+	      img: 'https://openmoji.org/data/color/svg/1F35F.svg'
+	  },
+	  {
+	      name: 'cheeseburger',
+	      img: 'https://openmoji.org/data/color/svg/1F354.svg'
+	  },
+	  {
+	      name: 'ice cream',
+	      img: 'https://openmoji.org/data/color/svg/1F368.svg'
+	  },
+	  {
+	      name: 'pizza',
+	      img: 'https://openmoji.org/data/color/svg/1F355.svg'
+	  },
+	  {
+	      name: 'baby bottle',
+	      img: 'https://openmoji.org/data/color/svg/1F37C.svg'
+	  },
+	  {
+	      name: 'hot dog',
+	      img: 'https://openmoji.org/data/color/svg/1F32D.svg'
+	  },
+      ]
+
+      cardArray.sort(() => 0.5 - Math.random())
+
+      
+      const grid = document.querySelector('.grid')
+      const result = document.querySelector('#result')
+      
+      let cardsChosen = []
+      let cardsChosenIds = []
+      let cardsWon = []
+
+      function createBoard() {
+	  for (let i = 0; i < cardArray.length; i++) {
+	      const card = document.createElement('img')
+	      card.src = 'https://openmoji.org/data/color/svg/2753.svg'
+	      card.setAttribute('data-id', i)
+	      card.addEventListener('click', flipCard)
+	      grid.appendChild(card)
+	  }
+      }
+
+      function flipCard() {
+	  let cardId = this.getAttribute('data-id')
+	  cardsChosen.push(cardArray[cardId].name)
+	  cardsChosenIds.push(cardId)
+	  this.setAttribute('src', cardArray[cardId].img)
+	  if (cardsChosen.length === 2) {
+	      setTimeout(checkForMatch, 500)
+	  }
+
+      }
+      
+      function checkForMatch() {
+	  const cards = document.querySelectorAll('img')
+
+	  if (cardsChosenIds[0] === cardsChosenIds[1]) {
+	      alert('You have clicked the same image!')
+	      cards[cardsChosenIds[0]].setAttribute('src', 'https://openmoji.org/data/color/svg/2753.svg')
+	      cards[cardsChosenIds[1]].setAttribute('src', 'https://openmoji.org/data/color/svg/2753.svg')
+	  } else if (cardsChosen[0] === cardsChosen[1]) {
+	      alert('You have found a match!')
+	      cards[cardsChosenIds[0]].setAttribute('src', 'https://openmoji.org/data/color/svg/1F44D.svg')
+	      cards[cardsChosenIds[1]].setAttribute('src', 'https://openmoji.org/data/color/svg/1F44D.svg')
+	      cards[cardsChosenIds[0]].removeEventListener('click', flipCard)
+	      cards[cardsChosenIds[1]].removeEventListener('click', flipCard)
+	      cardsWon.push(cardsChosen)
+	  } else {
+	      cards[cardsChosenIds[0]].setAttribute('src', 'https://openmoji.org/data/color/svg/2753.svg')
+	      cards[cardsChosenIds[1]].setAttribute('src', 'https://openmoji.org/data/color/svg/2753.svg')
+	      alert('Sorry, try again!')
+	  }
+	  cardsChosen = []
+	  cardsChosenIds = []
+	  result.textContent = cardsWon.length
+	  if (cardsWon.length === cardArray.length / 2) {
+	      result.textContent = 'Congratulations! You have won!'
+	  }
+      }
+
+
+      createBoard()
+
+
+    </script>
+
+  </body>
+</html>

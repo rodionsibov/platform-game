@@ -19,3 +19,5 @@ https://rodionsibov.github.io/platform-game/gravity.html
 ## Sine waves
 https://rodionsibov.github.io/platform-game/sine-waves.html
 
+## Javascript rain
+https://rodionsibov.github.io/platform-game/javascript-rain.html

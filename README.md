@@ -11,3 +11,6 @@ https://rodionsibov.github.io/platform-game/galactic-light-trails.html
 
 ## Animated background
 https://rodionsibov.github.io/platform-game/animated-background.html
+
+## Gravity
+https://rodionsibov.github.io/platform-game/gravity.html

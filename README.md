@@ -1,8 +1,8 @@
 # platform-game 
 
 ## Side scroller game
-https://rodionsibov.github.io/platform-game/platform-game.html
-https://rodionsibov.github.io/platform-game/platform-game1.html
+- https://rodionsibov.github.io/platform-game/platform-game.html
+- https://rodionsibov.github.io/platform-game/platform-game1.html
 
 ## Floating particles effect
 https://rodionsibov.github.io/platform-game/floating-particles-effect.html

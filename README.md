@@ -16,3 +16,6 @@ https://rodionsibov.github.io/platform-game/animated-background.html
 ## Gravity
 https://rodionsibov.github.io/platform-game/gravity.html
 
+## Sine waves
+https://rodionsibov.github.io/platform-game/sine-waves.html
+

@@ -21,3 +21,6 @@ https://rodionsibov.github.io/platform-game/sine-waves.html
 
 ## Javascript rain
 https://rodionsibov.github.io/platform-game/javascript-rain.html
+
+## The Snake Game 
+https://rodionsibov.github.io/platform-game/snake/index.html
